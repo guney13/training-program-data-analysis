@@ -1,0 +1,22 @@
+4Feb2023
+
+bw:
+w 0 kg;
+
+kcal:
+e 0 kcal;
+
+lat_pulldown
+
+cable_seated_row
+
+one_arm_pull_down
+
+
+
+bar_curl
+
+cable_curl
+
+treadmill:
+mins 15;

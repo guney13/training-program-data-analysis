@@ -1,0 +1,23 @@
+2023-04-19
+
+bench_press:
+w 80kg; rps 5s5r;
+w 60kg; rps 1s14r;
+
+smith_machine_incline_bench_press:
+w 50kg; rps 5s8r;
+
+fly_machine:
+w 57.5kg; rps 5s8r;
+
+db_tri_ex:
+w 27.5kg; rps 8,9,8;
+
+one_arm_cable_tri_ex:
+w 10kg; rps 18,18,16,16;
+
+leg_raises:
+rps 5s15r;
+
+treadmill:
+mins 10;

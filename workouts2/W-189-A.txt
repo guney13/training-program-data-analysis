@@ -1,0 +1,33 @@
+10Feb2023
+
+bw:
+w 0 kg;
+
+kcal:
+e 0 kcal;
+
+bench_press:
+w 72.5 kg; rps 5s5r;
+
+db_incline_bench_press:
+w 22.5 kg; rps 3s12r;
+w 22.5 kg; rps 2s10r;
+
+decline_press:
+w 80 kg; rps 5s8r;
+
+cable_fly:
+w 12.5 kg; rps 5s12r;
+
+db_tri_ex:
+w 22.5 kg; rps 2s12r;
+w 22.5 kg; rps 1s10r;
+
+one_arm_cable_tri_ex:
+w 7.5 kg; rps 4s20r;
+
+leg_raises:
+w bw; rps 5s12r;
+
+treadmill:
+mins 10;

@@ -1,0 +1,25 @@
+2023-06-02
+
+bench_press:
+w 80kg; rps 5,5,4;
+w 75kg; rps 2s5r;
+
+db_incline_bench_press:
+w 25kg; rps 12,12,12,12,11;
+
+cable_fly:
+w 15kg; rps 1s8r;
+w 17.5kg; rps 1s8r;
+w 20kg; rps 6,9,8;
+
+db_tri_ex:
+w 30kg; rps 3s12r;
+
+one_arm_cable_tri_ex:
+w 12.5kg; rps 12,12,12,14;
+
+leg_raises:
+rps 21,20,20,20,20;
+
+treadmill:
+mins 10;

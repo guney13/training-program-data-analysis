@@ -1,0 +1,19 @@
+2023-05-19
+
+pull_up:
+rps 9,9,7,8,8;
+
+seated_row:
+w 160kg; rps 10,10,10,8,8;
+
+ez_bar_curl:
+w 27.5kg; rps 12,12,10,10,10;
+
+db_hammer_curl:
+w 25kg; rps 3s20r;
+
+one_arm_cable_pulldown:
+w 84kg; rps 5s8r;
+
+seated_row:
+w 70kg; rps 5s8r;

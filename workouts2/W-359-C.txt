@@ -1,0 +1,23 @@
+2023-07-30
+
+pull_up:
+rps 10,10,10,8,8;
+
+kroc_row:
+w 30kg; rps 30,20,10,10,10;
+
+ez_bar_curl:
+w 30kg; rps 5s10r;
+
+db_hammer_curl:
+w 30kg; rps 3s20r;
+
+w_n_g_lat_pulldown:
+w 82kg; rps 5s8r;
+
+cable_seated_row:
+w 91kg; rps 2s8r;
+w 84kg; rps 3s8r;
+
+treadmill:
+mins 17;

@@ -1,0 +1,16 @@
+2023-08-29
+
+db_flat_bench_press:
+w 35kg; rps 5s5r;
+
+db_incline_bench_press:
+w 30kg; rps 5s8r;
+
+one_arm_cable_tri_ex:
+w 21.25kg; rps 4s24;
+
+leg_raises:
+rps 5s20r;
+
+treadmill:
+mins 16;

@@ -1,0 +1,24 @@
+2023-06-09
+
+pull_up
+rps 8,9,9,8,7;
+
+bent_over_row:
+w 60kg; 4s8r;
+w 100kg; 1s4r;
+
+db_curl:
+w 15kg; rps 1s24r;
+w 17.5kg; rps 14,16,16,14;
+
+db_hammer_curl:
+w 25kg; rps 3s20r;
+
+one_arm_cable_pulldown:
+w 47.5kg; rps 5s16r;
+
+seated_row_machine:
+w 91kg; rps 8,8,8,7,7;
+
+treadmill:
+mins 10;

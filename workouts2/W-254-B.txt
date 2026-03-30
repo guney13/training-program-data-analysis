@@ -1,0 +1,23 @@
+2023-04-16
+
+db_shoulder_press:
+w 22.5kg; rps 5s12r;
+
+seated_db_rear_delt_fly:
+w 15kg; rps 5s8r;
+
+db_shrug:
+w 25kg; rps 1s15r;
+w 30kg; rps 3s12r;
+
+lat_raises:
+w 20kg; rps 5s12r;
+
+leg_extension:
+w 91kg; rps 12,12,12,11,10;
+
+leg_curl:
+w 70kg; rps 10,10,10,8,8;
+
+calf_raises_machine:
+w 100kg; rps 14,14,14,12,12;

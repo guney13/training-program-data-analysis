@@ -1,0 +1,13 @@
+2023-08-22
+
+db_shrug:
+w 40kg; rps 3s16r;
+
+single_leg_extension:
+w 52kg; rps 5s24r;
+
+leg_curl:
+w 84kg; rps 8,8,8,6,6;
+
+leg_press_calf_raises:
+w 200kg; rps 5s20r;

@@ -1,0 +1,30 @@
+6Mar2023
+
+bw:
+w 0 kg;
+
+kcal:
+e 0 kcal;
+
+bench_press:
+w 77.5 kg; rps 5s5r;
+
+db_incline_bench_press:
+w 25 kg; rps 2s10r;
+w 25 kg; rps 3s10r;
+
+fly_machine:
+w 45 kg; rps 5s8r;
+
+db_tri_ex:
+w 25 kg; rps 1s10r;
+w 25 kg; rps 2s8r;
+
+one_arm_cable_tri_ex:
+w 10 kg; rps 4s24r;
+
+leg_raises:
+w bw; rps 5s14r;
+
+treadmill:
+mins 10;

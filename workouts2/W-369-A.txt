@@ -1,0 +1,20 @@
+2023-08-09
+
+bench_press:
+w 90kg; rps 3;
+w 80kg; rps 5,5,5,7;
+
+db_incline_bench_press:
+w 32.5kg; rps 8,10,8,6,6;
+
+db_tri_ex:
+w 37.5kg; rps 10,8,8;
+
+one_arm_cable_tri_ex:
+w 21.25kg; rps 4s24;
+
+leg_raises:
+rps 5s20r;
+
+treadmill:
+mins 16;

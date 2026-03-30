@@ -1,0 +1,23 @@
+2023-08-14
+
+db_shoulder_press:
+w 27.5kg; rps 10,10,8,8,8;
+
+face_pull:
+w 15kg; rps 5s10r;
+
+lat_raises:
+w 22.5kg; rps 5s12r;
+
+db_shrug:
+w 40kg; rps 8,10,12;
+
+single_leg_extension:
+w 52kg; rps 16,20,20,20,20;
+
+seated_leg_curl:
+w 130kg; rps 1s6r;
+w 107.5kg; 8,8,8,10;
+
+leg_press_calf_raises:
+w 86kg; rps 5s20r;

@@ -1,0 +1,30 @@
+2023-04-22
+
+w_n_g_lat_pulldown:
+w 77kg; rps 4s8r;
+w 91kg; rps 1s8r;
+
+one_arm_cable_pulldown:
+w 32.25kg; rps 2s10r;
+w 47.25kg; rps 2s8r;
+
+cable_pullover:
+w 17.5kg; rps 2s10r;
+w 21.25kg; rps 2s8r;
+
+back_ex_bench:
+w 40 kg; rps 1s10r;
+w 60 kg; rps 1s8r;
+
+cable_seated_row;
+w 84kg; rps 4s8r;
+
+bar_curl:
+w 25kg; rps 4s12r;
+w 12.5kg; rps 4s15r;
+
+db_hammer_curl:
+w 22.5kg; rps 3s20r;
+
+treadmill:
+mins 10;

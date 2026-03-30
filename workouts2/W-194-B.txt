@@ -1,0 +1,30 @@
+15Feb2023
+
+bw:
+w 0 kg;
+
+kcal:
+e 0 kcal;
+
+db_shoulder_press:
+w 22.5 kg; rps 3s8r;
+w 22.5 kg; rps 2s6r;
+
+ez_front_row:
+w 30 kg; rps 5s8r;
+
+lat_raises:
+w 15 kg; rps 5s12r;
+
+leg_extension:
+w 77 kg; rps 4s10r;
+w 77 kg; rps 1s10r;
+
+db_rdl:
+w 27.5 kg; rps 5s8r;
+
+leg_press_calf_raises:
+w 180 kg; rps 5s14r;
+
+treadmill:
+mins 15;
