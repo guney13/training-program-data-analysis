@@ -20,7 +20,7 @@ def getNameListOfFiles(directory, option= ''):
 
 
 from log_parser import *
-from heatmap import *
+from eda import *
 
 if __name__ == "__main__":
     directory_of_sessions = 'workouts2'
