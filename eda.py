@@ -163,7 +163,7 @@ def plot_workout_heatmap(data: dict, save_path: str | None = None):
     # 7. Save or show
     if save_path:
         fig.savefig(save_path, dpi=150, bbox_inches="tight")
-        print(f"Heatmap saved → {save_path}")
+        print(f"Heatmap saved, {save_path}")
 
     return fig
 
@@ -375,7 +375,7 @@ def plot_weekly_volume(data: dict, save_path: str | None = None):
     # 9. Save or show
     if save_path:
         fig.savefig(save_path, dpi= 150, bbox_inches= "tight")
-        print(f"Weekly volume chart saved → {save_path}")
+        print(f"Weekly volume chart saved, {save_path}")
 
     return fig
 
@@ -567,6 +567,6 @@ def plot_strength_progression(data: dict, save_path: str | None = None):
 
     if save_path:
         fig.savefig(save_path, dpi=150, bbox_inches="tight")
-        print(f"Strength progression chart saved to {save_path}")
+        print(f"Strength progression chart saved, {save_path}")
 
     return fig

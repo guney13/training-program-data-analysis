@@ -22,6 +22,10 @@ def getNameListOfFiles(directory, option= ''):
 from log_parser import *
 from eda import *
 
+
+from hypothesis_test import test_frequency_vs_strength, print_hypothesis_results
+
+
 if __name__ == "__main__":
     directory_of_sessions = 'workouts2'
     print("Number of A sessions:", count_txt_files(directory_of_sessions, option= 'A'))
@@ -35,7 +39,7 @@ if __name__ == "__main__":
 
     print(f"Loaded {len(data)} workout sessions.\n")
     
-    for key in list(data.keys())[:10]:
+    for key in list(data.keys())[:1]:
         w = data[key]
         print(f"{'─'*50}")
         print(f"Key        : {key}")
@@ -57,13 +61,16 @@ if __name__ == "__main__":
 
 
     fig = plot_workout_heatmap(data, save_path= "workout_heatmap.png")
-    plt.show()
+    #plt.show()
 
     fig_vol = plot_weekly_volume(data, save_path= "weekly_volume.png")
-    plt.show()
+    #plt.show()
 
     fig_strength = plot_strength_progression(data, save_path="strength_progression.png")
-    plt.show()
+    #plt.show()
+
+    results = test_frequency_vs_strength(data)
+    print_hypothesis_results(results)
 
     '''
     # Aggregate: collect all unique exercise names
