@@ -19,7 +19,7 @@ workouts2/ folder contains the logs of the fitness program
 
 
 **Hypothesis:**\
-* H0: no significant positive linear relationship between frequency and strength gain rate\
+* H0: no significant positive linear relationship between frequency and strength gain rate
 * H1: higher frequency is positively associated with faster strength gain rate
 
 
