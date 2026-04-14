@@ -13,14 +13,14 @@ workouts2/ folder contains the logs of the fitness program
 
 
 **EDA:**
-workout_heatmap.png the heatmap of gym sessions over the given timeline\
-weekly_volume.png shows the graph of weekly volume, each gym session type is shown\
-strength_progression.png represents the lifted weight progression for specific exercises that targets different muscle groups
+- workout_heatmap.png the heatmap of gym sessions over the given timeline
+- weekly_volume.png shows the graph of weekly volume, each gym session type is shown
+- strength_progression.png represents the lifted weight progression for specific exercises that targets different muscle groups
 
 
-**Hypothesis:**
-H0: no significant positive linear relationship between frequency and strength gain rate\
-H1: higher frequency is positively associated with faster strength gain rate
+**Hypothesis:**\
+* H0: no significant positive linear relationship between frequency and strength gain rate\
+* H1: higher frequency is positively associated with faster strength gain rate
 
 
 **Usage:**
