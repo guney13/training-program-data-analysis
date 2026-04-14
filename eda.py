@@ -7,6 +7,12 @@ import matplotlib.patches as mpatches
 import numpy as np
 
 
+import matplotlib.ticker as ticker
+from collections import defaultdict
+
+
+
+
 # INPUT:  data dict returned by load_workout_directory()
 #   keys: "W-NNN-X", values: parsed workout dicts
 #   save_path  str | None — if given, saves PNG to that path
@@ -165,11 +171,9 @@ def plot_workout_heatmap(data: dict, save_path: str | None = None):
 
 
 
-import matplotlib.ticker as ticker
-from collections import defaultdict
 
 
-# HELPERS
+# DISPLAYING WEEKLY VOLUME
 
 def _compute_set_volume(s: dict) -> float:
     """
@@ -372,5 +376,197 @@ def plot_weekly_volume(data: dict, save_path: str | None = None):
     if save_path:
         fig.savefig(save_path, dpi= 150, bbox_inches= "tight")
         print(f"Weekly volume chart saved → {save_path}")
+
+    return fig
+
+
+
+
+
+
+# STRENGTH PROGRESSION GRAPH
+
+TRACKED_EXERCISES = [
+    "bench_press",
+    "db_shoulder_press",
+    "leg_extension",
+    "lat_pulldown",
+]
+
+EXERCISE_COLOR = {
+    "bench_press":     "#4C9BE8",
+    "db_shoulder_press":  "#F5A623",
+    "leg_extension":   "#57C26A",
+    "lat_pulldown":    "#E85D75",
+}
+
+
+def _max_weight_for_exercise(workout: dict, exercise_name: str):
+    """
+        Find the heaviest non-bodyweight weight used for a given exercise in one workout.
+        Returns float or None if the exercise was not done that day.
+    """
+    for ex in workout["exercises"]:
+        if ex["name"] != exercise_name:
+            continue
+        weights = [
+            s["weight_kg"]
+            for s in ex["sets"]
+            if not s["bodyweight"] and s["weight_kg"] is not None and s["weight_kg"] > 0
+        ]
+        if weights:
+            return max(weights)
+    return None
+
+
+def plot_strength_progression(data: dict, save_path: str | None = None):
+    """
+        Plot strength progression over time for four exercises:
+        bench_press, shoulder_press, leg_extension, lat_pulldown.
+
+        Each exercise gets its own subplot. The x-axis is the workout date
+        and the y-axis is the heaviest weight used in that session (kg).
+        Bodyweight sets are excluded.
+
+        Parameters
+        ----------
+        data : dict
+            Output of load_workout_directory().
+        save_path : str or None
+            File path to save the figure as a PNG.
+            Pass None to skip saving.
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+    """
+
+    # Build a timeline per exercise: list of (date, max_weight_kg)
+    timelines: dict[str, list[tuple[date, float]]] = defaultdict(list)
+
+    for w in data.values():
+        if not w["date_str"]:
+            continue
+        d = datetime.strptime(w["date_str"], "%Y-%m-%d").date()
+        for exercise_name in TRACKED_EXERCISES:
+            max_w = _max_weight_for_exercise(w, exercise_name)
+            if max_w is not None:
+                timelines[exercise_name].append((d, max_w))
+
+    # Sort each timeline by date
+    for exercise_name in TRACKED_EXERCISES:
+        timelines[exercise_name].sort(key=lambda x: x[0])
+
+    fig, axes = plt.subplots(
+        2, 2,
+        figsize=(16, 10),
+        facecolor="white",
+    )
+    fig.subplots_adjust(hspace=0.45, wspace=0.3)
+
+    axes_flat = axes.flatten()
+
+    for ax, exercise_name in zip(axes_flat, TRACKED_EXERCISES):
+        ax.set_facecolor("white")
+        color = EXERCISE_COLOR[exercise_name]
+        points = timelines[exercise_name]
+
+        if not points:
+            ax.text(
+                0.5, 0.5,
+                "No data found",
+                ha="center", va="center",
+                transform=ax.transAxes,
+                fontsize=11,
+                color="#aaaaaa",
+            )
+            ax.set_title(exercise_name.replace("_", " ").title(), fontsize=12, fontweight="bold", loc="left", pad=8)
+            continue
+
+        dates = [p[0] for p in points]
+        weights = [p[1] for p in points]
+
+        # Main line
+        ax.plot(
+            dates, weights,
+            color=color,
+            linewidth=1.8,
+            zorder=2,
+        )
+
+        # Scatter dots on top
+        ax.scatter(
+            dates, weights,
+            color=color,
+            s=22,
+            zorder=3,
+            linewidths=0,
+        )
+
+        # Light fill below the curve
+        ax.fill_between(
+            dates, weights,
+            alpha=0.12,
+            color=color,
+            zorder=1,
+        )
+
+        # Rolling 5-session average as a guide line (only if enough data)
+        if len(weights) >= 5:
+            window = 5
+            smoothed = np.convolve(weights, np.ones(window) / window, mode="valid")
+            smoothed_dates = dates[window - 1:]
+            ax.plot(
+                smoothed_dates, smoothed,
+                color=color,
+                linewidth=2.5,
+                alpha=0.45,
+                linestyle="--",
+                zorder=2,
+                label="5-session avg",
+            )
+            ax.legend(fontsize=8, frameon=False, loc="upper left")
+
+        # Axis styling
+        ax.set_title(
+            exercise_name.replace("_", " ").title(),
+            fontsize=12, fontweight="bold", loc="left", pad=8,
+        )
+        ax.set_ylabel("Weight (kg)", fontsize=9, labelpad=8)
+        ax.tick_params(axis="x", rotation=35, labelsize=8)
+        ax.tick_params(axis="y", labelsize=9)
+        ax.yaxis.grid(True, color="#eeeeee", linewidth=0.8, zorder=0)
+        ax.set_axisbelow(True)
+
+        for spine in ["top", "right"]:
+            ax.spines[spine].set_visible(False)
+        ax.spines["left"].set_color("#cccccc")
+        ax.spines["bottom"].set_color("#cccccc")
+
+        ax.yaxis.set_major_formatter(
+            ticker.FuncFormatter(lambda v, _: f"{v:.0f} kg")
+        )
+
+        # Annotate the personal best
+        peak_w = max(weights)
+        peak_d = dates[weights.index(peak_w)]
+        ax.annotate(
+            f"PB {peak_w:.1f} kg",
+            xy=(peak_d, peak_w),
+            xytext=(8, 8),
+            textcoords="offset points",
+            fontsize=8,
+            color=color,
+            fontweight="bold",
+        )
+
+    fig.suptitle(
+        "Strength Progression Over Time",
+        fontsize=14, fontweight="bold", y=1.01,
+    )
+
+    if save_path:
+        fig.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"Strength progression chart saved to {save_path}")
 
     return fig

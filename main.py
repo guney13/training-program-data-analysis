@@ -56,11 +56,14 @@ if __name__ == "__main__":
         print()
 
 
-
-
-    fig = plot_workout_heatmap(data, save_path="workout_heatmap.png")
+    fig = plot_workout_heatmap(data, save_path= "workout_heatmap.png")
     plt.show()
 
+    fig_vol = plot_weekly_volume(data, save_path= "weekly_volume.png")
+    plt.show()
+
+    fig_strength = plot_strength_progression(data, save_path="strength_progression.png")
+    plt.show()
 
     '''
     # Aggregate: collect all unique exercise names

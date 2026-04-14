@@ -43,7 +43,7 @@ from datetime import datetime
 from pathlib import Path
 from pprint import pformat
 
-import heatmap
+import eda
 
 
 _DATE_FORMATS = [
