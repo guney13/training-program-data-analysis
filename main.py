@@ -25,6 +25,15 @@ from eda import *
 
 from hypothesis_test import test_frequency_vs_strength, print_hypothesis_results
 
+from ml_models import (
+    build_ml_dataset,
+    train_and_evaluate,
+    print_ml_results,
+    plot_ml_results,
+    print_next_session_predictions,
+)
+
+
 
 if __name__ == "__main__":
     directory_of_sessions = 'workouts2'
@@ -72,6 +81,27 @@ if __name__ == "__main__":
     results = test_frequency_vs_strength(data)
     print_hypothesis_results(results)
 
+
+    # applying ml methods
+    # 1. Build the feature table from parsed workout data
+    ml_df = build_ml_dataset(data)
+    print(f"\nML dataset: {len(ml_df)} samples across {ml_df['exercise'].nunique()} exercises\n")
+ 
+    # 2. Train Linear Regression, Random Forest, XGBoost and cross-validate
+    ml_output = train_and_evaluate(ml_df, n_splits=5)
+ 
+    # 3. Print comparison table + feature importances
+    print_ml_results(ml_output)
+ 
+    # 4. Save the three-panel plot
+    fig_ml = plot_ml_results(ml_output, save_path="ml_results.png")
+ 
+    # 5. Print next-session weight predictions for each exercise
+    print_next_session_predictions(ml_df)
+    # END ML SECTION 
+
+
+
     '''
     # Aggregate: collect all unique exercise names
     all_exercises = set()
@@ -83,8 +113,7 @@ if __name__ == "__main__":
     for name in sorted(all_exercises):
         print(f"  {name}")
 
-    '''
-    
+    '''    
 
     # Report files with parse warnings
     warned = [(k, v["parse_warnings"]) for k, v in data.items() if v["parse_warnings"]]

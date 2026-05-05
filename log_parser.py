@@ -167,9 +167,17 @@ def _parse_set_line(line: str):
     return "unknown", line
 
 
+# Aliases: map variant names → canonical name.
+# Keeps the dataset consistent so ML models see one continuous history per exercise.
+_EXERCISE_ALIASES = {
+    "shoulder_press":     "db_shoulder_press",   # W-315-B uses this spelling
+    "w_n_g_lat_pulldown": "lat_pulldown",         # wide-neutral-grip variant (5 files)
+}
+
 def _normalise_exercise_name(raw: str) -> str:
-    """Strip trailing colon/semicolons and lower-case the exercise name."""
-    return raw.strip().rstrip(":;").strip().lower()
+    """Strip trailing colon/semicolons, lower-case, and resolve known aliases."""
+    name = raw.strip().rstrip(":;").strip().lower()
+    return _EXERCISE_ALIASES.get(name, name)
 
 
 # Main file parser

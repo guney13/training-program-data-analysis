@@ -10,6 +10,7 @@ workouts2/ folder contains the logs of the fitness program
 - Parses weight/rep data from structured text files
 - Generates calendar heatmaps, weekly volume charts, and strength progression graphs
 - Statistical hypothesis testing: correlation between training frequency and strength gains
+- Machine learning models to predict next session max weight for tracked exercises
 
 
 **EDA:**
@@ -22,6 +23,13 @@ workouts2/ folder contains the logs of the fitness program
 * H0: no significant positive linear relationship between frequency and strength gain rate
 * H1: higher frequency is positively associated with faster strength gain rate
 
+
+**ML:**
+* Task: regression - predict the next session's max weight (kg) for each tracked exercise
+* Tracked exercises: bench_press, db_shoulder_press, leg_extension, lat_pulldown
+* Models compared: Linear Regression (baseline), Random Forest, XGBoost
+* Validation: TimeSeriesSplit cross-validation
+* Output: ml_results.png - model comparison, actual vs predicted scatter, feature importances
 
 **Usage:**
 ```bash
