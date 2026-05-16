@@ -23,7 +23,7 @@ workouts2/ folder contains the logs of the fitness program
   * Comparing RQI trends against strength progression reveals whether weight increases reflect true strength gains or overlifting
 * `rest_gap_distribution.png`: Analyzes the number of days between consecutive training sessions
   * **Top Section:** A histogram of gap lengths color coded by category (back-to-back, 1 rest day, 2 rest days, long break 4+ days) with median and mean lines
-  * **Bottom Section:** A chronological stem chart of individual gaps, highlighting periods of dense training or extended rests
+  * **Bottom Section:** A chronological stem chart of individual gaps, highlighting periods of gap length
 
 
 **Hypothesis:**
