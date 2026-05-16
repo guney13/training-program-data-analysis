@@ -1,7 +1,9 @@
 
 
 
-import os 
+import os
+
+
 def count_txt_files(directory, option= ''):
     return sum(
         1 for f in os.listdir(directory)
@@ -21,7 +23,6 @@ def getNameListOfFiles(directory, option= ''):
 
 from log_parser import *
 from eda import *
-
 
 from hypothesis_test import test_frequency_vs_strength, print_hypothesis_results
 
@@ -78,6 +79,12 @@ if __name__ == "__main__":
     fig_strength = plot_strength_progression(data, save_path="strength_progression.png")
     #plt.show()
 
+    fig_rqi = plot_rep_quality_index(data, save_path="rep_quality_index.png")
+    #plt.show()
+
+    fig_rest = plot_rest_gap_distribution(data, save_path="rest_gap_distribution.png")
+    #plt.show()
+
     results = test_frequency_vs_strength(data)
     print_hypothesis_results(results)
 
@@ -98,8 +105,7 @@ if __name__ == "__main__":
  
     # 5. Print next-session weight predictions for each exercise
     print_next_session_predictions(ml_df)
-    # END ML SECTION 
-
+    #
 
 
     '''
