@@ -14,16 +14,16 @@ workouts2/ folder contains the logs of the fitness program
 
 
 **EDA:**
-* `workout_heatmap.png`: The heatmap of gym sessions over the given timeline.
-* `weekly_volume.png`: Shows the graph of weekly volume, broken down by session type.
-* `strength_progression.png`: Represents the lifted weight progression for specific exercises targeting different muscle groups.
-* `rep_quality_index.png`: Tracks the Rep Quality Index (RQI) over time for each tracked exercise.
-  * **Definition:** Defined as last_set_reps / first_set_reps (clamped to $[0, 1]$). It captures how cleanly a load is being lifted (1.0 means no fatigue-driven rep drop; lower values indicate progressive failure).
-  * **Visuals:** Each subplot shows raw per-session RQI scatter points, a rolling average with a $\pm1$ SD band, and a statistics box (mean, std, % of perfect sessions).
-  * **Insight:** Comparing RQI trends against strength progression reveals whether weight increases reflect true strength gains or over-lifting.
-* `rest_gap_distribution.png`: Analyzes the number of days between consecutive training sessions.
-  * **Top Panel:** A histogram of gap lengths color-coded by category (back-to-back, 1 rest day, 2 rest days, long break 4+ days) with median and mean lines.
-  * **Bottom Panel:** A chronological stem chart of individual gaps, highlighting periods of dense training or extended rests.
+* `workout_heatmap.png`: The heatmap of gym sessions over the given timeline
+* `weekly_volume.png`: Shows the graph of weekly volume, broken down by session type
+* `strength_progression.png`: Represents the lifted weight progression for specific exercises targeting different muscle groups
+* `rep_quality_index.png`: Tracks the Rep Quality Index (RQI) over time for each tracked exercise
+  * Defined as last_set_reps / first_set_reps (normalized to [0, 1]). It captures how cleanly a load is being lifted (1.0 means no fatigue driven rep drop; lower values indicate progressive failure)
+  * Each subplot shows raw per session RQI scatter points, a rolling average with a ±1 SD band, and a statistics box (mean, std, % of perfect sessions)
+  * Comparing RQI trends against strength progression reveals whether weight increases reflect true strength gains or overlifting
+* `rest_gap_distribution.png`: Analyzes the number of days between consecutive training sessions
+  * **Top Section:** A histogram of gap lengths color-coded by category (back-to-back, 1 rest day, 2 rest days, long break 4+ days) with median and mean lines
+  * **Bottom Section:** A chronological stem chart of individual gaps, highlighting periods of dense training or extended rests
 
 
 **Hypothesis:**
