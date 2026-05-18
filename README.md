@@ -27,8 +27,17 @@ workouts2/ folder contains the logs of the fitness program
 
 
 **Hypothesis:**
-* H0: no significant positive linear relationship between frequency and strength gain rate
-* H1: higher frequency is positively associated with faster strength gain rate
+
+* **Test 1 — Frequency vs Strength Gain Rate**
+  * H0: no significant positive linear relationship between training frequency and strength gain rate
+  * H1: higher frequency is positively associated with faster strength gain rate
+  * Unit of analysis: non-overlapping 28-day windows; frequency = sessions per window, gain rate = avg kg/week increase across tracked exercises
+
+* **Test 2 — Rest Gap vs Session Volume**
+  * H0: the number of rest days before a session has no linear relationship with total session volume
+  * H1: rest gap and session volume are linearly associated (either direction)
+  * Unit of analysis: individual sessions; volume = Summation(weight_kg x reps) across all weighted sets
+  * Two-tailed because both under-recovery (too little rest) and detraining (too much rest) could decline volume
 
 
 **ML:**
