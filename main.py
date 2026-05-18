@@ -24,8 +24,11 @@ def getNameListOfFiles(directory, option= ''):
 from log_parser import *
 from eda import *
 
-from hypothesis_test import test_frequency_vs_strength, print_hypothesis_results, test_rest_gap_vs_volume, print_rest_gap_results
-
+from hypothesis_test import (
+    test_frequency_vs_strength, print_hypothesis_results, 
+    test_rest_gap_vs_volume, print_rest_gap_results,
+    test_session_type_vs_volume_tier, print_session_type_volume_results
+)
 
 
 from ml_models import (
@@ -96,6 +99,9 @@ if __name__ == "__main__":
 
     rest_results = test_rest_gap_vs_volume(data)
     print_rest_gap_results(rest_results)
+
+    type_results = test_session_type_vs_volume_tier(data)
+    print_session_type_volume_results(type_results)
     ##
 
 

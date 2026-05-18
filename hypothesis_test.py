@@ -1,5 +1,3 @@
-
-
 """
     Two Pearson-correlation hypothesis tests on workout log data
 
@@ -18,7 +16,7 @@
         detraining (gap too long → strength/readiness drops) are plausible, so we
         make no directional assumption and use a two-tailed test.
         Unit of analysis is the individual session, not a time window.
-        Volume = Σ (weight_kg × reps) across all weighted sets in the session.
+        Volume = Summation (weight_kg x reps) across all weighted sets in the session.
 """
 
 import numpy as np
@@ -295,7 +293,7 @@ def print_hypothesis_results(results: dict):
 
 def _session_volume(workout: dict) -> float:
     """
-        Total volume for one session: Σ (weight_kg x reps) across every
+        Total volume for one session: Summation (weight_kg x reps) across every
         weighted set in every exercise.  Bodyweight sets are excluded because
         the load is unknown and inconsistent across body-weight changes
         Returns 0.0 if no weighted sets exist
@@ -312,13 +310,12 @@ def _session_volume(workout: dict) -> float:
 def _build_gap_volume_pairs(data: dict) -> list[dict]:
     """
         For each session that has a valid date and non-zero volume, record:
-            gap_days   - calendar days since the previous session (skipped for first)
-            volume_kg  - total weighted volume (kg x reps) of this session
-            date_str   - for display
-            key        - workout key e.g. "W-170-A"
+            gap_days  - calendar days since the previous session (skipped for first)
+            volume_kg - total weighted volume (kg x reps) of this session
+            date_str  - for display
+            key       - workout key e.g. "W-170-A"
 
-        Sessions are sorted chronologically.  The very first session has no
-        predecessor so it is excluded from the output.
+        Sessions are sorted chronologically. The very first session has no predecessor so it is excluded from the output.
     """
     sessions = []
     for key, w in data.items():
@@ -391,7 +388,7 @@ def test_rest_gap_vs_volume(data: dict, alpha: float = ALPHA) -> dict:
 
     # Two-tailed: critical value splits alpha across both tails
     t_crit  = stats.t.ppf(1 - alpha / 2, df=df)
-    p_value = 2 * stats.t.sf(abs(t_stat), df=df)   # two-tailed p
+    p_value = 2 * stats.t.sf(abs(t_stat), df=df) # two-tailed p
 
     reject = bool(abs(t_stat) > t_crit)
 
@@ -423,6 +420,183 @@ def test_rest_gap_vs_volume(data: dict, alpha: float = ALPHA) -> dict:
         "reject_null":        reject,
         "conclusion":         conclusion,
     }
+
+
+###
+# Test 3
+###
+
+def _build_session_type_volume_table(data: dict) -> list[dict]:
+    """
+        For every session with a valid date, known session type (A/B/C), and non-zero weighted volume, return:
+            { "key", "date_str", "session_type", "volume_kg" }
+    """
+    rows = []
+    for key, w in data.items():
+        if not w["date_str"] or not w["session_type"]:
+            continue
+        vol = _session_volume(w)
+        if vol <= 0:
+            continue
+        rows.append({
+            "key":          key,
+            "date_str":     w["date_str"],
+            "session_type": w["session_type"].upper(),
+            "volume_kg":    vol,
+        })
+    return rows
+
+
+def test_session_type_vs_volume_tier(data: dict, alpha: float = ALPHA) -> dict:
+    """
+    Chi-squared test of independence: does session type (A / B / C) affect
+    whether a session is "high" or "low" volume?
+
+    Design
+        For each session type separately, compute the median volume.
+        Label every session "high" if its volume >= its type's median, else "low".
+        Build a 3 x 2 contingency table (rows = A/B/C, cols = high/low) and apply
+        scipy.stats.chi2_contingency (with Yates' correction disabled for a 3x2 table).
+
+    Hypotheses
+        H0 : session type and volume tier are independent - the proportion of high-volume sessions is the same across A, B, and C days.
+        H1 : session type and volume tier are associated - at least one type systematically produces more (or fewer) high-volume sessions.
+
+    Two-tailed by nature (chi-squared is always non-directional).
+
+    Parameters
+        data  : dict  — output of load_workout_directory()
+        alpha : float — significance level (default 0.05)
+
+    Returns
+        dict with keys:
+            rows                 raw per-session records used
+            contingency_table    dict { session_type: {"high": int, "low": int} }
+            session_type_medians dict { session_type: median_volume_kg }
+            chi2_statistic       float
+            p_value              float
+            degrees_of_freedom   int  (= (r-1)*(c-1) = 2 for a 3×2 table)
+            alpha                float
+            reject_null          bool
+            conclusion           str
+    """
+    rows = _build_session_type_volume_table(data)
+
+    if len(rows) < 10:
+        raise ValueError(
+            f"Only {len(rows)} usable sessions found. Need at least 10."
+        )
+
+    # Compute per-type medians
+    from collections import defaultdict
+    type_volumes: dict[str, list[float]] = defaultdict(list)
+    for r in rows:
+        type_volumes[r["session_type"]].append(r["volume_kg"])
+
+    session_types = sorted(type_volumes.keys())
+    if len(session_types) < 2:
+        raise ValueError(
+            "Need at least 2 distinct session types (A/B/C) to run this test."
+        )
+
+    medians = {t: float(np.median(vs)) for t, vs in type_volumes.items()}
+
+    # Label each session high/low relative to its type's median
+    for r in rows:
+        r["tier"] = "high" if r["volume_kg"] >= medians[r["session_type"]] else "low"
+
+    # Build contingency table as a 2-D numpy array: rows=type, cols=high/low
+    tiers = ["high", "low"]
+    table_dict: dict[str, dict[str, int]] = {
+        t: {"high": 0, "low": 0} for t in session_types
+    }
+    for r in rows:
+        table_dict[r["session_type"]][r["tier"]] += 1
+
+    observed = np.array(
+        [[table_dict[t][tier] for tier in tiers] for t in session_types],
+        dtype=float,
+    )
+
+    chi2, p_value, dof, expected = stats.chi2_contingency(observed, correction=False)
+
+    reject = bool(p_value < alpha)
+
+    if reject:
+        # Find which type deviates most from independence
+        residuals = (observed - expected) / np.sqrt(expected)
+        max_idx   = np.unravel_index(np.abs(residuals).argmax(), residuals.shape)
+        deviant_type = session_types[max_idx[0]]
+        deviant_tier = tiers[max_idx[1]]
+        conclusion = (
+            f"Reject H0 (p = {p_value:.4f} < alpha = {alpha}). "
+            f"Session type and volume tier are not independent "
+            f"(χ²({dof}) = {chi2:.3f}). "
+            f"The largest deviation from independence is in type-{deviant_type} "
+            f"sessions, which have more {deviant_tier}-volume sessions than expected."
+        )
+    else:
+        conclusion = (
+            f"Fail to reject H0 (p = {p_value:.4f} >= alpha = {alpha}). "
+            f"No significant association between session type and volume tier "
+            f"(χ²({dof}) = {chi2:.3f}). "
+            f"The high/low volume split is consistent across A, B, and C sessions."
+        )
+
+    return {
+        "rows":                  rows,
+        "contingency_table":     table_dict,
+        "session_type_medians":  medians,
+        "chi2_statistic":        float(chi2),
+        "p_value":               float(p_value),
+        "degrees_of_freedom":    dof,
+        "alpha":                 alpha,
+        "reject_null":           reject,
+        "conclusion":            conclusion,
+    }
+
+
+def print_session_type_volume_results(results: dict):
+    """
+    Pretty-print the output of test_session_type_vs_volume_tier().
+    """
+    sep = "-" * 58
+
+    print(sep)
+    print("  Session Type vs Volume Tier — Chi-Squared Test")
+    print(sep)
+    print("  H0 : session type and volume tier are independent")
+    print("  H1 : session type is associated with volume tier  (non-directional)")
+    print(sep)
+    print(f"  Sessions analysed    : {len(results['rows'])}")
+    print(f"  Degrees of freedom   : {results['degrees_of_freedom']}")
+    print(f"  Significance level   : alpha = {results['alpha']}")
+    print()
+
+    # Per-type median volumes
+    print("  Median volume by session type (threshold for high/low split):")
+    for t, med in sorted(results["session_type_medians"].items()):
+        print(f"    Type {t} : {med:>10.1f} kg")
+    print()
+
+    # Contingency table
+    session_types = sorted(results["contingency_table"].keys())
+    print(f"  {'Type':<6}  {'High':>8}  {'Low':>8}  {'Total':>8}")
+    print(f"  {'-'*6}  {'-'*8}  {'-'*8}  {'-'*8}")
+    for t in session_types:
+        hi  = results["contingency_table"][t]["high"]
+        lo  = results["contingency_table"][t]["low"]
+        print(f"  {t:<6}  {hi:>8}  {lo:>8}  {hi+lo:>8}")
+    print()
+
+    print(f"  χ² statistic         : {results['chi2_statistic']:.4f}")
+    print(f"  p-value              : {results['p_value']:.4f}")
+    print()
+    verdict = "REJECT H0" if results["reject_null"] else "FAIL TO REJECT H0"
+    print(f"  Verdict  >>  {verdict}")
+    print()
+    print(f"  {results['conclusion']}")
+    print(sep)
 
 
 def print_rest_gap_results(results: dict):
