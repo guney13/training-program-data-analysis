@@ -1,13 +1,24 @@
 
+
 """
-    hypothesis_test.py
-    ------------------
-    Tests whether higher training frequency correlates with faster strength gains.
+    Two Pearson-correlation hypothesis tests on workout log data
 
-    H0: no significant positive linear relationship between frequency and strength gain rate
-    H1: higher frequency is positively associated with faster strength gain rate
+    Test 1 — Frequency vs Strength Gain Rate
+        H0: no significant positive linear relationship between frequency and strength gain rate
+        H1: higher frequency is positively associated with faster strength gain rate
+        One-tailed Pearson correlation test, alpha = 0.05.
 
-    One-tailed Pearson correlation test, alpha = 0.05.
+    Test 2 — Rest Gap vs Session Volume
+        H0: the number of rest days before a session has no linear relationship with
+            the total volume lifted in that session
+        H1: rest gap and session volume are linearly associated (either direction)
+        Two-tailed Pearson correlation test, alpha = 0.05.
+
+        Rationale: Both under-recovery (gap too short → fatigue carries over) and
+        detraining (gap too long → strength/readiness drops) are plausible, so we
+        make no directional assumption and use a two-tailed test.
+        Unit of analysis is the individual session, not a time window.
+        Volume = Σ (weight_kg × reps) across all weighted sets in the session.
 """
 
 import numpy as np
@@ -26,7 +37,6 @@ TRACKED_EXERCISES = [
 # Window size in days. 4 weeks gives enough sessions per bucket
 # without being so wide that changes within it get lost
 WINDOW_DAYS = 28
-
 ALPHA = 0.05
 
 
@@ -273,4 +283,186 @@ def print_hypothesis_results(results: dict):
             f"{w['session_count']:>8}  "
             f"{w['avg_gain_kg_per_week']:>+16.3f}"
         )
+    print(sep)
+
+
+
+
+
+###
+# Test 2
+###
+
+def _session_volume(workout: dict) -> float:
+    """
+        Total volume for one session: Σ (weight_kg x reps) across every
+        weighted set in every exercise.  Bodyweight sets are excluded because
+        the load is unknown and inconsistent across body-weight changes
+        Returns 0.0 if no weighted sets exist
+    """
+    total = 0.0
+    for ex in workout["exercises"]:
+        for s in ex["sets"]:
+            if s["bodyweight"] or s["weight_kg"] is None or s["weight_kg"] <= 0:
+                continue
+            total += s["weight_kg"] * sum(s["reps"])
+    return total
+
+
+def _build_gap_volume_pairs(data: dict) -> list[dict]:
+    """
+        For each session that has a valid date and non-zero volume, record:
+            gap_days   - calendar days since the previous session (skipped for first)
+            volume_kg  - total weighted volume (kg x reps) of this session
+            date_str   - for display
+            key        - workout key e.g. "W-170-A"
+
+        Sessions are sorted chronologically.  The very first session has no
+        predecessor so it is excluded from the output.
+    """
+    sessions = []
+    for key, w in data.items():
+        if not w["date_str"]:
+            continue
+        vol = _session_volume(w)
+        if vol <= 0:
+            continue
+        d = datetime.strptime(w["date_str"], "%Y-%m-%d").date()
+        sessions.append({"key": key, "date": d, "date_str": w["date_str"], "volume_kg": vol})
+
+    sessions.sort(key=lambda s: s["date"])
+
+    pairs = []
+    for i in range(1, len(sessions)):
+        gap = (sessions[i]["date"] - sessions[i - 1]["date"]).days
+        pairs.append({
+            "key":        sessions[i]["key"],
+            "date_str":   sessions[i]["date_str"],
+            "gap_days":   gap,
+            "volume_kg":  sessions[i]["volume_kg"],
+        })
+
+    return pairs
+
+
+def test_rest_gap_vs_volume(data: dict, alpha: float = ALPHA) -> dict:
+    """
+    Test whether the rest gap before a session correlates with session volume.
+
+    Parameters
+        data : dict
+            Output of load_workout_directory().
+        alpha : float
+            Significance level for the two-tailed test (default 0.05).
+
+    Returns
+        dict with keys:
+            pairs                list of per-session dicts (gap_days + volume_kg)
+            n                    number of sessions used
+            pearson_r            Pearson correlation coefficient
+            t_statistic          computed t value
+            t_critical           two-tailed critical value at alpha
+            p_value              two-tailed p-value
+            degrees_of_freedom   n - 2
+            alpha                significance level used
+            reject_null          bool, True if we reject H0
+            conclusion           plain-English summary string
+    """
+    pairs = _build_gap_volume_pairs(data)
+
+    if len(pairs) < 4:
+        raise ValueError(
+            f"Only {len(pairs)} usable session pairs found. "
+            "Need at least 4. Check that your data has valid dates and weighted sets."
+        )
+
+    gaps    = np.array([p["gap_days"]  for p in pairs], dtype=float)
+    volumes = np.array([p["volume_kg"] for p in pairs], dtype=float)
+
+    n  = len(pairs)
+    df = n - 2
+
+    r, _ = stats.pearsonr(gaps, volumes)
+
+    if abs(r) == 1.0:
+        t_stat = np.inf * np.sign(r)
+    else:
+        t_stat = r * np.sqrt(df / (1 - r ** 2))
+
+    # Two-tailed: critical value splits alpha across both tails
+    t_crit  = stats.t.ppf(1 - alpha / 2, df=df)
+    p_value = 2 * stats.t.sf(abs(t_stat), df=df)   # two-tailed p
+
+    reject = bool(abs(t_stat) > t_crit)
+
+    direction = "positively" if r > 0 else "negatively"
+    if reject:
+        conclusion = (
+            f"Reject H0 (p = {p_value:.4f} < alpha = {alpha}). "
+            f"Rest gap is {direction} associated with session volume "
+            f"(r = {r:.3f}, t({df}) = {t_stat:.3f}). "
+            + ("Longer rest → more volume." if r > 0
+               else "Longer rest → less volume.")
+        )
+    else:
+        conclusion = (
+            f"Fail to reject H0 (p = {p_value:.4f} >= alpha = {alpha}). "
+            f"No significant linear relationship between rest gap and session volume "
+            f"(r = {r:.3f}, t({df}) = {t_stat:.3f})."
+        )
+
+    return {
+        "pairs":              pairs,
+        "n":                  n,
+        "pearson_r":          float(r),
+        "t_statistic":        float(t_stat),
+        "t_critical":         float(t_crit),
+        "p_value":            float(p_value),
+        "degrees_of_freedom": df,
+        "alpha":              alpha,
+        "reject_null":        reject,
+        "conclusion":         conclusion,
+    }
+
+
+def print_rest_gap_results(results: dict):
+    """
+        Pretty-print the output of test_rest_gap_vs_volume()
+    """
+    sep = "-" * 56
+
+    print(sep)
+    print("  Rest Gap vs Session Volume — Hypothesis Test")
+    print(sep)
+    print("  H0 : no linear relationship between rest gap and volume")
+    print("  H1 : rest gap and session volume are linearly associated  (two-tailed)")
+    print(sep)
+    print(f"  Sessions analysed    : {results['n']}")
+    print(f"  Degrees of freedom   : {results['degrees_of_freedom']}")
+    print(f"  Significance level   : alpha = {results['alpha']}")
+    print()
+    print(f"  Pearson r            : {results['pearson_r']:+.4f}")
+    print(f"  t statistic          : {results['t_statistic']:+.4f}")
+    print(f"  t critical (±)       : ±{results['t_critical']:.4f}")
+    print(f"  p-value (two-tailed) : {results['p_value']:.4f}")
+    print()
+    verdict = "REJECT H0" if results["reject_null"] else "FAIL TO REJECT H0"
+    print(f"  Verdict  >>  {verdict}")
+    print()
+    print(f"  {results['conclusion']}")
+    print(sep)
+
+    print()
+    print("  Per-session breakdown (first 20 shown):")
+    print(f"  {'Date':<12}  {'Key':<12}  {'Rest days':>9}  {'Volume (kg)':>11}")
+    print(f"  {'-'*12}  {'-'*12}  {'-'*9}  {'-'*11}")
+    for p in results["pairs"][:20]:
+        print(
+            f"  {p['date_str']:<12}  "
+            f"{p['key']:<12}  "
+            f"{p['gap_days']:>9}  "
+            f"{p['volume_kg']:>11.1f}"
+        )
+    if len(results["pairs"]) > 20:
+        print(f"  ... ({len(results['pairs']) - 20} more sessions not shown)")
     print(sep)

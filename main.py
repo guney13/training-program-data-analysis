@@ -24,7 +24,9 @@ def getNameListOfFiles(directory, option= ''):
 from log_parser import *
 from eda import *
 
-from hypothesis_test import test_frequency_vs_strength, print_hypothesis_results
+from hypothesis_test import test_frequency_vs_strength, print_hypothesis_results, test_rest_gap_vs_volume, print_rest_gap_results
+
+
 
 from ml_models import (
     build_ml_dataset,
@@ -85,9 +87,19 @@ if __name__ == "__main__":
     fig_rest = plot_rest_gap_distribution(data, save_path="rest_gap_distribution.png")
     #plt.show()
 
+
+    # applying hypothesis tests
     results = test_frequency_vs_strength(data)
     print_hypothesis_results(results)
 
+    print("\n\n\n")
+
+    rest_results = test_rest_gap_vs_volume(data)
+    print_rest_gap_results(rest_results)
+    ##
+
+
+    print("\n\n\n\n\n\n")
 
     # applying ml methods
     # 1. Build the feature table from parsed workout data
