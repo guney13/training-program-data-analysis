@@ -39,6 +39,13 @@ workouts2/ folder contains the logs of the fitness program
   * Unit of analysis: individual sessions; volume = Summation(weight_kg x reps) across all weighted sets
   * Two-tailed because both under-recovery (too little rest) and detraining (too much rest) could decline volume
 
+* **Test 3 — Session Type vs Volume Tier**
+  * H0: session type and volume tier are independent - the proportion of high volume sessions is the same across A, B, and C days
+  * H1: session type is associated with volume tier - at least one type systematically produces more or fewer high volume sessions
+  * Unit of analysis: individual sessions; each session is labeled "high" or "low" volume relative to the median volume of its own session type (type specific split to control for the inherent weight difference across A/B/C focuses)
+  * Test: chi-squared test of independence on a 3x2 (session type x volume tier) contingency table
+
+
 
 **ML:**
 * Task: regression - predict the next session's max weight (kg) for each tracked exercise

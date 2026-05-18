@@ -116,7 +116,7 @@ def build_ml_dataset(data: dict) -> pd.DataFrame:
         sessions_7  = sum(1 for d in date_set if 0 < (session_date - d).days <= 7)
         sessions_28 = sum(1 for d in date_set if 0 < (session_date - d).days <= 28)
 
-        # Encode session type A→0, B→1, C→2
+        # Encode session type A->0, B->1, C->2
         type_enc = {"A": 0, "B": 1, "C": 2}.get(w["session_type"], -1)
 
         weeks_since_start = (session_date - start_date).days / 7.0
@@ -543,7 +543,7 @@ def print_next_session_predictions(df: pd.DataFrame):
             delta = result["predicted_next"] - result["last_known_max"]
             sign  = "+" if delta >= 0 else ""
             print(f"  {ex:<22}  last: {result['last_known_max']:>6.1f} kg  "
-                  f"→  predicted: {result['predicted_next']:>6.2f} kg  "
+                  f"=>  predicted: {result['predicted_next']:>6.2f} kg  "
                   f"({sign}{delta:.2f} kg)")
         else:
             print(f"  {ex:<22}  insufficient data")
